@@ -26,8 +26,22 @@ const server = net.createServer((socket) => {
             socket.write("\r\n");
             socket.write(userAgent);
 
+        } 
+        else if (path.startsWith("/files")) {
+            const fileName = path.substring(7);
+            const filePath =  "/tmp/data/codecrafters.io/http-server-tester/" + fileName;
+            fs.readFile(filePath, (err, data) => {
+              if (err) {
+                socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
+              } else {
+                socket.write("HTTP/1.1 200 OK\r\n");
+                socket.write("Content-Type: application/octet-stream\r\n");
+                socket.write("Content-Length: " + data.length + "\r\n\r\n");
+                socket.write(data + "\r\n");
+              }
+            })
         }
-        else {
+         else {
           socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
         }
       });
